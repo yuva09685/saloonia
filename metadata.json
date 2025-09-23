@@ -1,0 +1,5 @@
+{
+  "name": "Saloonia - AI Stylist",
+  "description": "An AI-powered stylist app that lets users try on different hairstyles. Upload a clear headshot, pick from various hairstyles, and instantly see yourself with the new look before you commit to the cut.",
+  "requestFramePermissions": []
+}
