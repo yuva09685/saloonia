@@ -15,6 +15,9 @@ export const applyHairstyle = async (
 
     if (!response.ok) {
       const errorText = await response.text();
+      if (response.status === 429) {
+        throw new Error("API quota exceeded. Please wait a moment and try again, or upgrade your plan.");
+      }
       throw new Error(`Failed to generate hairstyle: ${errorText}`);
     }
 

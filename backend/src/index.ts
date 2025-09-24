@@ -63,9 +63,14 @@ app.post("/api/generate", async (req, res) => {
   } catch (error) {
     console.error("Error in /api/generate:", error);
     if (error instanceof Error) {
+      // Handle quota exceeded error specifically
+      if (error.message.includes("429") || error.message.includes("quota")) {
+        res.status(429).send("API quota exceeded. Please wait a moment and try again, or upgrade your plan.");
+      } else {
         res.status(500).send(`An error occurred while generating content: ${error.message}`);
+      }
     } else {
-        res.status(500).send("An unknown error occurred while generating content.");
+      res.status(500).send("An unknown error occurred while generating content.");
     }
   }
 });
