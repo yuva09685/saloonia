@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useEffect } from 'react';
 import { UserImage, AppState, Hairstyle } from './types';
 import { HAIRSTYLES } from './constants';
@@ -16,7 +15,7 @@ interface HairstyleSelectorProps {
 const HairstyleSelector: React.FC<HairstyleSelectorProps> = ({ hairstyles, onSelect }) => (
     <div className="w-full">
       <h3 className="text-2xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500 mb-6">
-        2. Pick a Hairstyle
+        2. Pick a Style
       </h3>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {hairstyles.map((style) => (
@@ -34,6 +33,45 @@ const HairstyleSelector: React.FC<HairstyleSelectorProps> = ({ hairstyles, onSel
       </div>
     </div>
 );
+
+const CustomStyleGenerator: React.FC<{ onGenerate: (description: string) => void }> = ({ onGenerate }) => {
+    const [description, setDescription] = useState('');
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (description.trim()) {
+            onGenerate(description.trim());
+        }
+    };
+
+    return (
+        <div>
+            <h3 className="text-2xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500 mb-6">
+                Or... Describe Your Own Style
+            </h3>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+                <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="e.g., 'a short, curly bob with platinum blonde highlights' or 'long, sleek hair like a superhero'."
+                    className="flex-grow bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500 transition-shadow w-full h-24 resize-none"
+                    aria-label="Hairstyle description"
+                    rows={3}
+                />
+                <button
+                    type="submit"
+                    className="w-full flex items-center justify-center gap-2 px-5 py-3 bg-amber-500 text-white font-semibold rounded-lg shadow-md hover:bg-amber-600 transition-transform transform hover:scale-105 duration-300 disabled:bg-gray-600 disabled:cursor-not-allowed disabled:scale-100"
+                    disabled={!description.trim()}
+                    aria-label="Generate custom hairstyle"
+                >
+                    <MagicWandIcon className="w-5 h-5" />
+                    <span>Generate My Style</span>
+                </button>
+            </form>
+             <p className="text-center text-gray-500 text-sm mt-3">Get creative! Describe any hairstyle or color you can imagine.</p>
+        </div>
+    );
+};
 
 
 const App: React.FC = () => {
@@ -84,7 +122,6 @@ const App: React.FC = () => {
       }
     };
     generateImage();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appState, userImage, selectedHairstylePrompt]);
 
   const renderContent = () => {
@@ -104,6 +141,15 @@ const App: React.FC = () => {
             </div>
             <div className="w-full md:w-2/3">
               <HairstyleSelector hairstyles={HAIRSTYLES} onSelect={handleHairstyleSelect} />
+              <div className="my-8 flex items-center justify-center" aria-hidden="true">
+                <div className="flex-grow border-t border-gray-700"></div>
+                <span className="flex-shrink mx-4 text-gray-500 font-semibold">OR</span>
+                <div className="flex-grow border-t border-gray-700"></div>
+              </div>
+              <CustomStyleGenerator onGenerate={(description) => {
+                const prompt = `Give the person in the photo the following hairstyle: "${description}". Make it look realistic, stylish, and suited to their face.`;
+                handleHairstyleSelect(prompt);
+              }} />
             </div>
           </div>
         );
