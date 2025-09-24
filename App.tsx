@@ -80,6 +80,14 @@ const App: React.FC = () => {
   const [selectedHairstylePrompt, setSelectedHairstylePrompt] = useState<string | null>(null);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [backendMessage, setBackendMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch('/api')
+      .then(res => res.text())
+      .then(data => setBackendMessage(data))
+      .catch(err => console.error(err));
+  }, []);
 
   const handleImageUpload = useCallback((image: UserImage) => {
     setUserImage(image);
@@ -147,7 +155,7 @@ const App: React.FC = () => {
                 <div className="flex-grow border-t border-gray-700"></div>
               </div>
               <CustomStyleGenerator onGenerate={(description) => {
-                const prompt = `Give the person in the photo the following hairstyle: "${description}". Make it look realistic, stylish, and suited to their face.`;
+                const prompt = `Give the person in the photo the following hairstyle: \"${description}\". Make it look realistic, stylish, and suited to their face.`;
                 handleHairstyleSelect(prompt);
               }} />
             </div>
@@ -190,6 +198,7 @@ const App: React.FC = () => {
         <p className="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">
           Try on a new hairstyle with AI before you visit the salon. No guesswork. No regrets.
         </p>
+        {backendMessage && <p className="mt-4 text-lg text-green-400 max-w-2xl mx-auto">{backendMessage}</p>}
       </header>
       <main className="flex items-center justify-center">
         {renderContent()}
