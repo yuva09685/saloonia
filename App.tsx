@@ -5,7 +5,7 @@ import { applyHairstyle } from './services/geminiService';
 import { ImageUploader } from './components/ImageUploader';
 import { Loader } from './components/Loader';
 import { ResultView } from './components/ResultView';
-import { MagicWandIcon, StarIcon } from './components/IconComponents';
+import { MagicWandIcon } from './components/IconComponents';
 
 interface HairstyleSelectorProps {
   hairstyles: Hairstyle[];
@@ -34,44 +34,45 @@ const HairstyleSelector: React.FC<HairstyleSelectorProps> = ({ hairstyles, onSel
     </div>
 );
 
-const CelebrityStyleGenerator: React.FC<{ onGenerate: (name: string) => void }> = ({ onGenerate }) => {
-    const [name, setName] = useState('');
+const CustomStyleGenerator: React.FC<{ onGenerate: (description: string) => void }> = ({ onGenerate }) => {
+    const [description, setDescription] = useState('');
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (name.trim()) {
-            onGenerate(name.trim());
+        if (description.trim()) {
+            onGenerate(description.trim());
         }
     };
 
     return (
         <div>
-            <h3 className="text-2xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-blue-400 mb-6">
-                Or... Try a Celebrity Look
+            <h3 className="text-2xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500 mb-6">
+                Or... Describe Your Own Style
             </h3>
-            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2">
-                <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="e.g., Zendaya, Brad Pitt"
-                    className="flex-grow bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 transition-shadow w-full"
-                    aria-label="Celebrity name"
+            <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+                <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="e.g., 'a short, curly bob with platinum blonde highlights' or 'long, sleek hair like a superhero'."
+                    className="flex-grow bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500 transition-shadow w-full h-24 resize-none"
+                    aria-label="Hairstyle description"
+                    rows={3}
                 />
                 <button
                     type="submit"
-                    className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 bg-teal-500 text-white font-semibold rounded-lg shadow-md hover:bg-teal-600 transition-transform transform hover:scale-105 duration-300 disabled:bg-gray-600 disabled:cursor-not-allowed disabled:scale-100"
-                    disabled={!name.trim()}
-                    aria-label="Generate celebrity hairstyle"
+                    className="w-full flex items-center justify-center gap-2 px-5 py-3 bg-amber-500 text-white font-semibold rounded-lg shadow-md hover:bg-amber-600 transition-transform transform hover:scale-105 duration-300 disabled:bg-gray-600 disabled:cursor-not-allowed disabled:scale-100"
+                    disabled={!description.trim()}
+                    aria-label="Generate custom hairstyle"
                 >
-                    <StarIcon className="w-5 h-5" />
-                    <span>Generate</span>
+                    <MagicWandIcon className="w-5 h-5" />
+                    <span>Generate My Style</span>
                 </button>
             </form>
-             <p className="text-center text-gray-500 text-sm mt-3">Enter a celebrity's name to try on their signature hairstyle.</p>
+             <p className="text-center text-gray-500 text-sm mt-3">Get creative! Describe any hairstyle or color you can imagine.</p>
         </div>
     );
 };
+
 
 const App: React.FC = () => {
   const [appState, setAppState] = useState<AppState>(AppState.IDLE);
@@ -145,8 +146,8 @@ const App: React.FC = () => {
                 <span className="flex-shrink mx-4 text-gray-500 font-semibold">OR</span>
                 <div className="flex-grow border-t border-gray-700"></div>
               </div>
-              <CelebrityStyleGenerator onGenerate={(celebrityName) => {
-                const prompt = `Give the person in the photo the iconic hairstyle of ${celebrityName}. Make it look realistic, stylish, and suited to their face.`;
+              <CustomStyleGenerator onGenerate={(description) => {
+                const prompt = `Give the person in the photo the following hairstyle: "${description}". Make it look realistic, stylish, and suited to their face.`;
                 handleHairstyleSelect(prompt);
               }} />
             </div>
