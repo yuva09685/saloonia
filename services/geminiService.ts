@@ -2,7 +2,7 @@
 import { GoogleGenAI, Modality } from "@google/genai";
 import { UserImage } from '../types';
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
+const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY as string });
 
 export const applyHairstyle = async (
   userImage: UserImage,
