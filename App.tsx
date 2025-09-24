@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useEffect } from 'react';
 import { UserImage, AppState, Hairstyle } from './types';
 import { HAIRSTYLES } from './constants';
@@ -6,7 +5,7 @@ import { applyHairstyle } from './services/geminiService';
 import { ImageUploader } from './components/ImageUploader';
 import { Loader } from './components/Loader';
 import { ResultView } from './components/ResultView';
-import { MagicWandIcon } from './components/IconComponents';
+import { MagicWandIcon, StarIcon } from './components/IconComponents';
 
 interface HairstyleSelectorProps {
   hairstyles: Hairstyle[];
@@ -16,7 +15,7 @@ interface HairstyleSelectorProps {
 const HairstyleSelector: React.FC<HairstyleSelectorProps> = ({ hairstyles, onSelect }) => (
     <div className="w-full">
       <h3 className="text-2xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500 mb-6">
-        2. Pick a Hairstyle
+        2. Pick a Style
       </h3>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {hairstyles.map((style) => (
@@ -35,6 +34,44 @@ const HairstyleSelector: React.FC<HairstyleSelectorProps> = ({ hairstyles, onSel
     </div>
 );
 
+const CelebrityStyleGenerator: React.FC<{ onGenerate: (name: string) => void }> = ({ onGenerate }) => {
+    const [name, setName] = useState('');
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (name.trim()) {
+            onGenerate(name.trim());
+        }
+    };
+
+    return (
+        <div>
+            <h3 className="text-2xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-blue-400 mb-6">
+                Or... Try a Celebrity Look
+            </h3>
+            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2">
+                <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="e.g., Zendaya, Brad Pitt"
+                    className="flex-grow bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 transition-shadow w-full"
+                    aria-label="Celebrity name"
+                />
+                <button
+                    type="submit"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 bg-teal-500 text-white font-semibold rounded-lg shadow-md hover:bg-teal-600 transition-transform transform hover:scale-105 duration-300 disabled:bg-gray-600 disabled:cursor-not-allowed disabled:scale-100"
+                    disabled={!name.trim()}
+                    aria-label="Generate celebrity hairstyle"
+                >
+                    <StarIcon className="w-5 h-5" />
+                    <span>Generate</span>
+                </button>
+            </form>
+             <p className="text-center text-gray-500 text-sm mt-3">Enter a celebrity's name to try on their signature hairstyle.</p>
+        </div>
+    );
+};
 
 const App: React.FC = () => {
   const [appState, setAppState] = useState<AppState>(AppState.IDLE);
@@ -84,7 +121,6 @@ const App: React.FC = () => {
       }
     };
     generateImage();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appState, userImage, selectedHairstylePrompt]);
 
   const renderContent = () => {
@@ -104,6 +140,15 @@ const App: React.FC = () => {
             </div>
             <div className="w-full md:w-2/3">
               <HairstyleSelector hairstyles={HAIRSTYLES} onSelect={handleHairstyleSelect} />
+              <div className="my-8 flex items-center justify-center" aria-hidden="true">
+                <div className="flex-grow border-t border-gray-700"></div>
+                <span className="flex-shrink mx-4 text-gray-500 font-semibold">OR</span>
+                <div className="flex-grow border-t border-gray-700"></div>
+              </div>
+              <CelebrityStyleGenerator onGenerate={(celebrityName) => {
+                const prompt = `Give the person in the photo the iconic hairstyle of ${celebrityName}. Make it look realistic, stylish, and suited to their face.`;
+                handleHairstyleSelect(prompt);
+              }} />
             </div>
           </div>
         );
